@@ -17,5 +17,30 @@
     "devDependencies": {
         "@types/node": "^20.0.0",
         "typescript": "^5.0.0"
+    },
+    "agentConfig": {
+        "pluginType": "elizaos:client:1.0.0",
+        "pluginParameters": {
+            "PRIVATE_KEY": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Private key is required"
+            },
+            "PROVIDER_PROXY_URL": {
+                "type": "string",
+                "pattern": "^https?://\\S+$",
+                "description": "Provider proxy URL must be a valid URL"
+            },
+            "WALLET_ADDRESS": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Wallet address is required"
+            },
+            "SPHERON_PROXY_PORT": {
+                "type": "string",
+                "optional": true,
+                "description": "Optional proxy port for Spheron"
+            }
+        }
     }
 }
