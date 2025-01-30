@@ -1,5 +1,5 @@
 {
-    "name": "@elizaos/plugin-spheron",
+    "name": "@elizaos-plugins/plugin-spheron",
     "version": "0.1.8+build.1",
     "description": "Spheron Protocol Plugin for Eliza",
     "main": "dist/index.js",
