@@ -287,7 +287,7 @@ function parseDuration(duration) {
     );
   }
   const [, value, unit] = match;
-  const numValue = parseFloat(value);
+  const numValue = Number.parseFloat(value);
   switch (unit) {
     case "min":
       return numValue / 60;
@@ -338,7 +338,11 @@ var AVAILABLE_GPU_MODELS = [
 // src/actions/escrow.ts
 function isEscrowContent(content) {
   console.log("Content for escrow operation:", content);
-  return typeof content.token === "string" && (content.operation === "deposit" || content.operation === "withdraw" ? typeof content.amount === "number" && content.amount > 0 : content.operation === "check") && (content.operation === "deposit" || content.operation === "withdraw" || content.operation === "check");
+  if (typeof content !== "object" || content === null) {
+    return false;
+  }
+  const contentObj = content;
+  return typeof contentObj.token === "string" && (contentObj.operation === "deposit" || contentObj.operation === "withdraw" ? typeof contentObj.amount === "number" && contentObj.amount > 0 : contentObj.operation === "check") && (contentObj.operation === "deposit" || contentObj.operation === "withdraw" || contentObj.operation === "check");
 }
 var escrowTemplate = `Respond with a JSON markdown block containing only the extracted values
 - Use null for any values that cannot be determined.
@@ -406,16 +410,17 @@ var escrow_default = {
   },
   handler: async (runtime, message, state, _options, callback) => {
     elizaLogger2.log("Starting ESCROW_OPERATION handler...");
-    if (!state) {
-      state = await runtime.composeState(message);
+    let currentState = state;
+    if (!currentState) {
+      currentState = await runtime.composeState(message);
     } else {
-      state = await runtime.updateRecentMessageState(state);
+      currentState = await runtime.updateRecentMessageState(currentState);
     }
     state.recentMessages = state.recentMessages.split("\n").filter(
       (line) => line.includes("(just now)") || line.includes("(user)")
     ).slice(-2).join("\n");
     const escrowContext = composeContext({
-      state,
+      state: currentState,
       template: escrowTemplate
     });
     const content = await generateObjectDeprecated({
@@ -797,16 +802,20 @@ var DEPLOYMENT_TEMPLATES = {
 // src/actions/deployment.ts
 function isDeploymentContent(content) {
   elizaLogger3.debug("Content for deployment operation:", content);
-  if (typeof content.operation !== "string" || !["create", "update", "close"].includes(content.operation)) {
+  if (typeof content !== "object" || content === null) {
     return false;
   }
-  switch (content.operation) {
+  const contentObj = content;
+  if (typeof contentObj.operation !== "string" || !["create", "update", "close"].includes(contentObj.operation)) {
+    return false;
+  }
+  switch (contentObj.operation) {
     case "create":
-      return typeof content.template === "string" && typeof content.customizations === "object";
+      return typeof contentObj.template === "string" && typeof contentObj.customizations === "object";
     case "update":
-      return typeof content.leaseId === "string" && typeof content.template === "string" && typeof content.customizations === "object";
+      return typeof contentObj.leaseId === "string" && typeof contentObj.template === "string" && typeof contentObj.customizations === "object";
     case "close":
-      return typeof content.leaseId === "string";
+      return typeof contentObj.leaseId === "string";
     default:
       return false;
   }
@@ -906,16 +915,17 @@ var deployment_default = {
   },
   handler: async (runtime, message, state, _options, callback) => {
     elizaLogger3.log("Starting DEPLOYMENT_OPERATION handler...");
-    if (!state) {
-      state = await runtime.composeState(message);
+    let currentState = state;
+    if (!currentState) {
+      currentState = await runtime.composeState(message);
     } else {
-      state = await runtime.updateRecentMessageState(state);
+      currentState = await runtime.updateRecentMessageState(currentState);
     }
     state.recentMessages = state.recentMessages.split("\n").filter(
       (line) => line.includes("(just now)") || line.includes("(user)")
     ).slice(-2).join("\n");
     const deploymentContext = composeContext2({
-      state,
+      state: currentState,
       template: deploymentTemplate
     });
     const content = await generateObjectDeprecated2({
@@ -1303,4 +1313,4 @@ export {
   validateSpheronConfig,
   withdrawBalance
 };
-//# sourceMappingURL=index.mjs.map
+//# sourceMappingURL=index.js.map

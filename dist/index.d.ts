@@ -112,8 +112,8 @@ declare function validateSpheronConfig(runtime: IAgentRuntime): Promise<SpheronC
 
 declare const getSDKInstance: (runtime: IAgentRuntime) => Promise<SpheronSDK>;
 declare const getUserBalance: (runtime: IAgentRuntime, token: string, walletAddress?: string) => Promise<BalanceInfo>;
-declare const depositBalance: (runtime: IAgentRuntime, token: string, amount: number) => Promise<any>;
-declare const withdrawBalance: (runtime: IAgentRuntime, token: string, amount: number) => Promise<any>;
+declare const depositBalance: (runtime: IAgentRuntime, token: string, amount: number) => Promise<unknown>;
+declare const withdrawBalance: (runtime: IAgentRuntime, token: string, amount: number) => Promise<unknown>;
 declare const startDeployment: (runtime: IAgentRuntime, computeConfig: SpheronComputeConfig) => Promise<any>;
 declare const updateDeployment: (runtime: IAgentRuntime, leaseId: string, computeConfig: SpheronComputeConfig) => Promise<any>;
 declare const createOrder: (runtime: IAgentRuntime, iclYaml: string) => Promise<{
@@ -124,7 +124,7 @@ declare const updateOrder: (runtime: IAgentRuntime, leaseId: string, iclYaml: st
     providerAddress: string;
 }>;
 declare const getDeployment: (runtime: IAgentRuntime, leaseId: string) => Promise<DeploymentDetails>;
-declare const closeDeployment: (runtime: IAgentRuntime, leaseId: string) => Promise<any>;
+declare const closeDeployment: (runtime: IAgentRuntime, leaseId: string) => Promise<unknown>;
 declare function getDeploymentStatus(runtime: IAgentRuntime, deploymentId: string): Promise<boolean>;
 declare function generateICLYaml(config: SpheronComputeConfig): string;
 
