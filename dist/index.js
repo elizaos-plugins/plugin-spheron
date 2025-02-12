@@ -73,16 +73,17 @@ var withdrawBalance = async (runtime, token, amount) => {
   });
 };
 var startDeployment = async (runtime, computeConfig) => {
+  var _a, _b;
   const token = computeConfig.token || "CST";
   const balance = await getUserBalance(runtime, token);
-  if (!balance.unlockedBalance || !balance.token?.decimal) {
+  if (!balance.unlockedBalance || !((_a = balance.token) == null ? void 0 : _a.decimal)) {
     throw new Error("Invalid balance info structure");
   }
   const unlockedBalance = BigInt(balance.unlockedBalance);
   const decimal = BigInt(balance.token.decimal);
   const divisor = BigInt(10) ** decimal;
   const balanceAmount = Number(unlockedBalance) / Number(divisor);
-  const requiredAmount = calculateGPUPrice(computeConfig.computeResources?.gpu) * (computeConfig.duration ? parseDuration(computeConfig.duration) : 1);
+  const requiredAmount = calculateGPUPrice((_b = computeConfig.computeResources) == null ? void 0 : _b.gpu) * (computeConfig.duration ? parseDuration(computeConfig.duration) : 1);
   if (balanceAmount < requiredAmount) {
     throw new Error(
       `Insufficient balance. Available: ${balanceAmount} ${token}, Required: ${requiredAmount} ${token}`
@@ -117,16 +118,17 @@ var startDeployment = async (runtime, computeConfig) => {
   return result;
 };
 var updateDeployment = async (runtime, leaseId, computeConfig) => {
+  var _a, _b;
   const token = computeConfig.token || "CST";
   const balance = await getUserBalance(runtime, token);
-  if (!balance.unlockedBalance || !balance.token?.decimal) {
+  if (!balance.unlockedBalance || !((_a = balance.token) == null ? void 0 : _a.decimal)) {
     throw new Error("Invalid balance info structure");
   }
   const unlockedBalance = BigInt(balance.unlockedBalance);
   const decimal = BigInt(balance.token.decimal);
   const divisor = BigInt(10) ** decimal;
   const balanceAmount = Number(unlockedBalance) / Number(divisor);
-  const requiredAmount = calculateGPUPrice(computeConfig.computeResources?.gpu) * (computeConfig.duration ? parseDuration(computeConfig.duration) : 1);
+  const requiredAmount = calculateGPUPrice((_b = computeConfig.computeResources) == null ? void 0 : _b.gpu) * (computeConfig.duration ? parseDuration(computeConfig.duration) : 1);
   if (balanceAmount < requiredAmount) {
     throw new Error(
       `Insufficient balance. Available: ${balanceAmount} ${token}, Required: ${requiredAmount} ${token}`
@@ -204,7 +206,8 @@ async function getDeploymentStatus(runtime, deploymentId) {
 function calculateGPUPrice(gpu) {
   if (!gpu) return 1;
   const basePrice = (() => {
-    switch (gpu.model?.toLowerCase()) {
+    var _a;
+    switch ((_a = gpu.model) == null ? void 0 : _a.toLowerCase()) {
       // Consumer GPUs
       case "rtx4090":
         return 0.7;
@@ -233,6 +236,7 @@ function calculateGPUPrice(gpu) {
   return basePrice * (gpu.count || 1);
 }
 function generateICLYaml(config) {
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
   return `version: "1.0"
 services:
   ${config.name}:
@@ -256,23 +260,23 @@ profiles:
     ${config.name}:
       resources:
         cpu:
-          units: ${config.computeResources?.cpu || 2}
+          units: ${((_a = config.computeResources) == null ? void 0 : _a.cpu) || 2}
         memory:
-          size: ${config.computeResources?.memory || "2Gi"}
+          size: ${((_b = config.computeResources) == null ? void 0 : _b.memory) || "2Gi"}
         storage:
-          - size: ${config.computeResources?.storage || "10Gi"}
-        ${config.computeResources?.gpu ? `gpu:
-          units: ${config.computeResources?.gpu?.count || 1}
+          - size: ${((_c = config.computeResources) == null ? void 0 : _c.storage) || "10Gi"}
+        ${((_d = config.computeResources) == null ? void 0 : _d.gpu) ? `gpu:
+          units: ${((_f = (_e = config.computeResources) == null ? void 0 : _e.gpu) == null ? void 0 : _f.count) || 1}
           attributes:
             vendor:
               nvidia:
-                - model: ${config.computeResources?.gpu?.model || "rtx4090"}` : ""}
+                - model: ${((_h = (_g = config.computeResources) == null ? void 0 : _g.gpu) == null ? void 0 : _h.model) || "rtx4090"}` : ""}
   placement:
     westcoast:
       pricing:
         ${config.name}:
           token: ${config.token || "CST"}
-          amount: ${calculateGPUPrice(config.computeResources?.gpu)}
+          amount: ${calculateGPUPrice((_i = config.computeResources) == null ? void 0 : _i.gpu)}
 deployment:
   ${config.name}:
     westcoast:
@@ -430,7 +434,7 @@ var escrow_default = {
     });
     if (!isEscrowContent(content)) {
       elizaLogger2.error("Invalid content for ESCROW_OPERATION action.");
-      callback?.({
+      callback == null ? void 0 : callback({
         text: "Unable to process escrow request. Invalid content provided.",
         content: { error: "Invalid escrow content" }
       });
@@ -447,7 +451,7 @@ var escrow_default = {
       if (content.operation === "check") {
         const formattedAvailableBalance = Number(balance.unlockedBalance) / 10 ** Number(balance.token.decimal);
         const formattedLockedBalance = Number(balance.lockedBalance) / 10 ** Number(balance.token.decimal);
-        callback?.({
+        callback == null ? void 0 : callback({
           text: `Current ${content.token.toUpperCase()} Balance for ${config.WALLET_ADDRESS}
  Available balance: ${formattedAvailableBalance.toFixed(2)} ${content.token.toUpperCase()}
  Locked balance: ${formattedLockedBalance.toFixed(2)} ${content.token.toUpperCase()}`,
@@ -466,7 +470,7 @@ var escrow_default = {
             content.token,
             content.amount
           );
-          callback?.({
+          callback == null ? void 0 : callback({
             text: `Successfully deposited ${content.amount} ${content.token.toUpperCase()} into Spheron Escrow for ${config.WALLET_ADDRESS}`,
             content: {
               success: true,
@@ -484,7 +488,7 @@ var escrow_default = {
           });
         } catch (error) {
           elizaLogger2.error("Deposit operation failed:", error);
-          callback?.({
+          callback == null ? void 0 : callback({
             text: `Failed to deposit ${content.amount} ${content.token.toUpperCase()}: ${error instanceof Error ? error.message : "Unknown error"}`,
             content: {
               success: false,
@@ -503,7 +507,7 @@ var escrow_default = {
             content.token,
             content.amount
           );
-          callback?.({
+          callback == null ? void 0 : callback({
             text: `Successfully withdrew ${content.amount} ${content.token.toUpperCase()} from Spheron Escrow for ${config.WALLET_ADDRESS}`,
             content: {
               success: true,
@@ -521,7 +525,7 @@ var escrow_default = {
           });
         } catch (error) {
           elizaLogger2.error("Withdraw operation failed:", error);
-          callback?.({
+          callback == null ? void 0 : callback({
             text: `Failed to withdraw ${content.amount} ${content.token.toUpperCase()}: ${error instanceof Error ? error.message : "Unknown error"}`,
             content: {
               success: false,
@@ -539,7 +543,7 @@ var escrow_default = {
       return true;
     } catch (error) {
       elizaLogger2.error("Escrow operation failed:", error);
-      callback?.({
+      callback == null ? void 0 : callback({
         text: "Escrow operation failed",
         content: {
           error: error instanceof Error ? error.message : "Unknown error"
@@ -669,133 +673,145 @@ import {
 var DEPLOYMENT_TEMPLATES = {
   "jupyter-notebook": {
     description: "Jupyter Notebook environment for AI development",
-    config: (customizations) => ({
-      name: "jupyter",
-      image: customizations.cpu ? "jupyter/minimal-notebook:latest" : "quay.io/jupyter/pytorch-notebook:cuda12-pytorch-2.4.1",
-      ports: [
-        {
-          containerPort: 8888,
-          servicePort: 8888
-        }
-      ],
-      env: [
-        {
-          name: "JUPYTER_TOKEN",
-          value: "spheron"
-        }
-      ],
-      computeResources: {
-        cpu: customizations.resources?.cpu || 4,
-        memory: customizations.resources?.memory || "8Gi",
-        storage: customizations.resources?.storage || "10Gi",
-        ...!customizations.cpu && {
-          gpu: {
-            count: customizations.resources?.gpu || 1,
-            model: customizations.resources?.gpu_model || "rtx4090"
+    config: (customizations) => {
+      var _a, _b, _c, _d, _e;
+      return {
+        name: "jupyter",
+        image: customizations.cpu ? "jupyter/minimal-notebook:latest" : "quay.io/jupyter/pytorch-notebook:cuda12-pytorch-2.4.1",
+        ports: [
+          {
+            containerPort: 8888,
+            servicePort: 8888
           }
-        }
-      },
-      duration: customizations.duration || "1d",
-      token: customizations.token || "CST"
-    })
+        ],
+        env: [
+          {
+            name: "JUPYTER_TOKEN",
+            value: "spheron"
+          }
+        ],
+        computeResources: {
+          cpu: ((_a = customizations.resources) == null ? void 0 : _a.cpu) || 4,
+          memory: ((_b = customizations.resources) == null ? void 0 : _b.memory) || "8Gi",
+          storage: ((_c = customizations.resources) == null ? void 0 : _c.storage) || "10Gi",
+          ...!customizations.cpu && {
+            gpu: {
+              count: ((_d = customizations.resources) == null ? void 0 : _d.gpu) || 1,
+              model: ((_e = customizations.resources) == null ? void 0 : _e.gpu_model) || "rtx4090"
+            }
+          }
+        },
+        duration: customizations.duration || "1d",
+        token: customizations.token || "CST"
+      };
+    }
   },
   "ollama-webui": {
     description: "Ollama Web UI for managing and interacting with LLMs",
-    config: (customizations) => ({
-      name: "ollama-webui",
-      image: "ghcr.io/open-webui/open-webui:ollama",
-      ports: [
-        {
-          containerPort: 8080,
-          servicePort: 8080
-        },
-        {
-          containerPort: 11434,
-          servicePort: 11434
-        }
-      ],
-      computeResources: {
-        cpu: customizations.resources?.cpu || 4,
-        memory: customizations.resources?.memory || "8Gi",
-        storage: customizations.resources?.storage || "20Gi",
-        ...!customizations.cpu && {
-          gpu: {
-            count: customizations.resources?.gpu || 1,
-            model: customizations.resources?.gpu_model || "rtx4090"
+    config: (customizations) => {
+      var _a, _b, _c, _d, _e;
+      return {
+        name: "ollama-webui",
+        image: "ghcr.io/open-webui/open-webui:ollama",
+        ports: [
+          {
+            containerPort: 8080,
+            servicePort: 8080
+          },
+          {
+            containerPort: 11434,
+            servicePort: 11434
           }
-        }
-      },
-      duration: customizations.duration || "1d",
-      token: customizations.token || "CST"
-    })
+        ],
+        computeResources: {
+          cpu: ((_a = customizations.resources) == null ? void 0 : _a.cpu) || 4,
+          memory: ((_b = customizations.resources) == null ? void 0 : _b.memory) || "8Gi",
+          storage: ((_c = customizations.resources) == null ? void 0 : _c.storage) || "20Gi",
+          ...!customizations.cpu && {
+            gpu: {
+              count: ((_d = customizations.resources) == null ? void 0 : _d.gpu) || 1,
+              model: ((_e = customizations.resources) == null ? void 0 : _e.gpu_model) || "rtx4090"
+            }
+          }
+        },
+        duration: customizations.duration || "1d",
+        token: customizations.token || "CST"
+      };
+    }
   },
   "vscode-pytorch": {
     description: "VS Code Server with PyTorch development environment",
-    config: (customizations) => ({
-      name: "vscode",
-      image: customizations.cpu ? "lscr.io/linuxserver/code-server" : "spheronnetwork/vscode-pytorch:latest",
-      ports: [
-        {
-          containerPort: 8443,
-          servicePort: 8443
-        }
-      ],
-      env: [
-        {
-          name: "PASSWORD",
-          value: "spheron"
-        }
-      ],
-      computeResources: {
-        cpu: customizations.resources?.cpu || 4,
-        memory: customizations.resources?.memory || "8Gi",
-        storage: customizations.resources?.storage || "20Gi",
-        ...!customizations.cpu && {
-          gpu: {
-            count: customizations.resources?.gpu || 1,
-            model: customizations.resources?.gpu_model || "rtx4090"
+    config: (customizations) => {
+      var _a, _b, _c, _d, _e;
+      return {
+        name: "vscode",
+        image: customizations.cpu ? "lscr.io/linuxserver/code-server" : "spheronnetwork/vscode-pytorch:latest",
+        ports: [
+          {
+            containerPort: 8443,
+            servicePort: 8443
           }
-        }
-      },
-      duration: customizations.duration || "1d",
-      token: customizations.token || "CST"
-    })
+        ],
+        env: [
+          {
+            name: "PASSWORD",
+            value: "spheron"
+          }
+        ],
+        computeResources: {
+          cpu: ((_a = customizations.resources) == null ? void 0 : _a.cpu) || 4,
+          memory: ((_b = customizations.resources) == null ? void 0 : _b.memory) || "8Gi",
+          storage: ((_c = customizations.resources) == null ? void 0 : _c.storage) || "20Gi",
+          ...!customizations.cpu && {
+            gpu: {
+              count: ((_d = customizations.resources) == null ? void 0 : _d.gpu) || 1,
+              model: ((_e = customizations.resources) == null ? void 0 : _e.gpu_model) || "rtx4090"
+            }
+          }
+        },
+        duration: customizations.duration || "1d",
+        token: customizations.token || "CST"
+      };
+    }
   },
   "heurist-miner": {
     description: "Heurist Miner for mining Heurist network",
-    config: (customizations) => ({
-      name: "heurist-miner",
-      image: "spheronnetwork/heurist-miner:latest",
-      ports: [
-        {
-          containerPort: 8888,
-          servicePort: 8888
-        }
-      ],
-      env: [
-        {
-          name: "MINER_ID_0",
-          value: customizations.template?.heuristMinerAddress || ""
-        },
-        {
-          name: "LOG_LEVEL",
-          value: "INFO"
-        }
-      ],
-      computeResources: {
-        cpu: customizations.resources?.cpu || 8,
-        memory: customizations.resources?.memory || "16Gi",
-        storage: customizations.resources?.storage || "200Gi",
-        ...!customizations.cpu && {
-          gpu: {
-            count: customizations.resources?.gpu || 1,
-            model: customizations.resources?.gpu_model || "rtx4090"
+    config: (customizations) => {
+      var _a, _b, _c, _d, _e, _f;
+      return {
+        name: "heurist-miner",
+        image: "spheronnetwork/heurist-miner:latest",
+        ports: [
+          {
+            containerPort: 8888,
+            servicePort: 8888
           }
-        }
-      },
-      duration: customizations.duration || "1d",
-      token: customizations.token || "CST"
-    })
+        ],
+        env: [
+          {
+            name: "MINER_ID_0",
+            value: ((_a = customizations.template) == null ? void 0 : _a.heuristMinerAddress) || ""
+          },
+          {
+            name: "LOG_LEVEL",
+            value: "INFO"
+          }
+        ],
+        computeResources: {
+          cpu: ((_b = customizations.resources) == null ? void 0 : _b.cpu) || 8,
+          memory: ((_c = customizations.resources) == null ? void 0 : _c.memory) || "16Gi",
+          storage: ((_d = customizations.resources) == null ? void 0 : _d.storage) || "200Gi",
+          ...!customizations.cpu && {
+            gpu: {
+              count: ((_e = customizations.resources) == null ? void 0 : _e.gpu) || 1,
+              model: ((_f = customizations.resources) == null ? void 0 : _f.gpu_model) || "rtx4090"
+            }
+          }
+        },
+        duration: customizations.duration || "1d",
+        token: customizations.token || "CST"
+      };
+    }
   }
 };
 
@@ -937,7 +953,7 @@ var deployment_default = {
       elizaLogger3.error(
         "Invalid content for DEPLOYMENT_OPERATION action."
       );
-      callback?.({
+      callback == null ? void 0 : callback({
         text: "Unable to process deployment request. Invalid content provided.",
         content: { error: "Invalid deployment content" }
       });
@@ -982,7 +998,7 @@ ${portInfo ? `Access URLs: ${portInfo}` : ""}`,
               ports
             }
           });
-          callback?.({
+          callback == null ? void 0 : callback({
             text: `Deployment created and ready!
 Lease ID: ${result.leaseId.toString()}
 ${portInfo ? `Access URLs: ${portInfo}` : ""}`,
@@ -1020,7 +1036,7 @@ ${portInfo ? `Access URLs: ${portInfo}` : ""}`,
             runtime,
             content.leaseId.toString()
           );
-          callback?.({
+          callback == null ? void 0 : callback({
             text: `Deployment ${content.leaseId.toString()} updated successfully`,
             content: {
               success: true,
@@ -1043,7 +1059,7 @@ ${portInfo ? `Access URLs: ${portInfo}` : ""}`,
             "Deployment closed with lease ID:",
             content.leaseId.toString()
           );
-          callback?.({
+          callback == null ? void 0 : callback({
             text: `Deployment ${content.leaseId.toString()} closed successfully`,
             content: {
               success: true,
@@ -1057,7 +1073,7 @@ ${portInfo ? `Access URLs: ${portInfo}` : ""}`,
     } catch (error) {
       console.log("Error:", error);
       elizaLogger3.error("Deployment operation failed:", error.message);
-      callback?.({
+      callback == null ? void 0 : callback({
         text: "Deployment operation failed",
         content: {
           error: error instanceof Error ? error.message : "Unknown error"
